@@ -2,7 +2,7 @@ use zstd;
 
 use std::env;
 use std::fs;
-use std::io;
+use bare_io as io;
 
 const SUFFIX: &'static str = ".zst";
 
@@ -29,7 +29,7 @@ fn compress(source: &str) -> io::Result<()> {
         zstd::Encoder::new(target, 1)?
     };
 
-    io::copy(&mut file, &mut encoder)?;
+    bare_io::copy::<_, _, 4096>(&mut file, &mut encoder)?;
     encoder.finish()?;
 
     Ok(())
@@ -43,7 +43,7 @@ fn decompress(source: &str) -> io::Result<()> {
 
     let mut target = fs::File::create(source.trim_end_matches(SUFFIX))?;
 
-    io::copy(&mut decoder, &mut target)?;
+    bare_io::copy::<_, _, 4096>(&mut decoder, &mut target)?;
 
     Ok(())
 }

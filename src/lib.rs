@@ -13,33 +13,37 @@
 //! ```no_run
 //! extern crate zstd;
 //!
-//! use std::io;
-//!
 //! fn main() {
 //! 	// Uncompress input and print the result.
-//! 	zstd::stream::copy_decode(io::stdin(), io::stdout()).unwrap();
+//! 	zstd::stream::copy_decode(std::io::stdin(), std::io::stdout()).unwrap();
 //! }
 //! ```
 //!
 //! [zstd]: https://github.com/facebook/zstd
 #![deny(missing_docs)]
+#![feature(min_const_generics)]
 
 pub mod block;
 pub mod dict;
 pub mod stream;
 
-use std::io;
+use bare_io as io;
 
 /// Default compression level.
 pub use zstd_safe::CLEVEL_DEFAULT as DEFAULT_COMPRESSION_LEVEL;
 
 #[doc(no_inline)]
-pub use crate::stream::{decode_all, encode_all, Decoder, Encoder};
+#[cfg(feature = "std")]
+pub use crate::stream::{decode_all, encode_all};
+pub use crate::stream::{Decoder, Encoder};
 
 /// Returns the error message as io::Error based on error_code.
 fn map_error_code(code: usize) -> io::Error {
     let msg = zstd_safe::get_error_name(code);
-    io::Error::new(io::ErrorKind::Other, msg.to_string())
+    #[cfg(feature = "std")]
+    { io::Error::new(io::ErrorKind::Other, msg.to_string()) }
+    #[cfg(not(feature = "std"))]
+    { io::Error::new(io::ErrorKind::Other, msg) }
 }
 
 // Some helper functions to write full-cycle tests.

@@ -10,7 +10,7 @@ mod decompressor;
 pub use self::compressor::Compressor;
 pub use self::decompressor::Decompressor;
 
-use std::io;
+use bare_io as io;
 
 /// Compresses a single block of data to the given destination buffer.
 ///

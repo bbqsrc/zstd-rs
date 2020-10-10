@@ -1,7 +1,7 @@
 use futures::Future;
 use partial_io::{GenWouldBlock, PartialAsyncRead, PartialWithErrors};
 use quickcheck::quickcheck;
-use std::io::{self, Cursor};
+use bare_io::{self as io, Cursor};
 use tokio_io::{AsyncRead, AsyncWrite};
 
 #[test]

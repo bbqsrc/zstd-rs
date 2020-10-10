@@ -17,6 +17,8 @@ mod tests;
 
 pub mod raw;
 
-pub use self::functions::{copy_decode, copy_encode, decode_all, encode_all};
+#[cfg(feature = "std")]
+pub use self::functions::{decode_all, encode_all};
+pub use self::functions::{copy_decode, copy_encode};
 pub use self::read::Decoder;
 pub use self::write::{AutoFinishEncoder, Encoder};

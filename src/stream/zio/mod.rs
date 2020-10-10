@@ -1,4 +1,4 @@
-//! Wrappers around raw operations implementing `std::io::{Read, Write}`.
+//! Wrappers around raw operations implementing `bare_io::{Read, Write}`.
 
 mod reader;
 mod writer;

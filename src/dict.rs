@@ -15,9 +15,12 @@
 //! [`Decoder::with_dictionary`]: ../struct.Decoder.html#method.with_dictionary
 
 use crate::map_error_code;
+#[cfg(feature = "std")]
 use std::fs;
 
-use std::io::{self, Read};
+use bare_io::{self as io, Read};
+
+#[cfg(feature = "std")]
 use std::path;
 
 pub use zstd_safe::{CDict, DDict};
@@ -73,9 +76,15 @@ pub fn from_continuous(
 ) -> io::Result<Vec<u8>> {
     // Complain if the lengths don't add up to the entire data.
     if sample_sizes.iter().sum::<usize>() != sample_data.len() {
+        #[cfg(feature = "std")]
         return Err(io::Error::new(
             io::ErrorKind::Other,
             "sample sizes don't add up".to_string(),
+        ));
+        #[cfg(not(feature = "std"))]
+        return Err(io::Error::new(
+            io::ErrorKind::Other,
+            "sample sizes don't add up"
         ));
     }
 
@@ -115,6 +124,7 @@ pub fn from_samples<S: AsRef<[u8]>>(
 }
 
 /// Train a dict from a list of files.
+#[cfg(feature = "std")]
 pub fn from_files<I, P>(filenames: I, max_size: usize) -> io::Result<Vec<u8>>
 where
     P: AsRef<path::Path>,
@@ -135,8 +145,8 @@ where
 #[cfg(test)]
 mod tests {
     use std::fs;
-    use std::io;
-    use std::io::Read;
+    use bare_io as io;
+    use bare_io::Read;
 
     use walkdir;
 
@@ -157,7 +167,7 @@ mod tests {
             let mut file = fs::File::open(path).unwrap();
             let mut content = Vec::new();
             file.read_to_end(&mut content).unwrap();
-            io::copy(
+            io::copy::<_, _, 4096>(
                 &mut &content[..],
                 &mut crate::stream::Encoder::with_dictionary(
                     &mut buffer,
@@ -170,7 +180,7 @@ mod tests {
             .unwrap();
 
             let mut result = Vec::new();
-            io::copy(
+            io::copy::<_, _, 4096>(
                 &mut crate::stream::Decoder::with_dictionary(
                     &buffer[..],
                     &dict[..],

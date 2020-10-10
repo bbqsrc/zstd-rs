@@ -1,5 +1,5 @@
 use clap::{value_t, App, Arg};
-use std::io;
+use bare_io as io;
 
 // This program trains a dictionary from one or more files,
 // to make future compression of similar small files more efficient.
@@ -33,5 +33,5 @@ fn main() {
     let dict = zstd::dict::from_files(&files, size).unwrap();
 
     let mut dict_reader: &[u8] = &dict;
-    io::copy(&mut dict_reader, &mut io::stdout()).unwrap();
+    io::copy::<_, _, 4096>(&mut dict_reader, &mut std::io::stdout()).unwrap();
 }

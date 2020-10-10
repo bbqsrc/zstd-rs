@@ -3,7 +3,7 @@ use partial_io::{
     GenInterruptedWouldBlock, PartialAsyncWrite, PartialWithErrors,
 };
 use quickcheck::quickcheck;
-use std::io::{self, Cursor};
+use bare_io::{self as io, Cursor};
 use tokio_io::{AsyncRead, AsyncWrite};
 
 #[test]

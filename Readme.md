@@ -31,12 +31,12 @@ This library provides `Read` and `Write` wrappers to handle (de)compression,
 along with convenience functions to made common tasks easier.
 
 For instance, `stream::copy_encode` and `stream::copy_decode` are easy-to-use
-wrappers around `std::io::copy`. Check the [stream] example:
+wrappers around `bare_io::copy`. Check the [stream] example:
 
 ```rust
 extern crate zstd;
 
-use std::io;
+use bare_io as io;
 
 // This function use the convenient `copy_encode` method
 fn compress(level: i32) {

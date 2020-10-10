@@ -1,5 +1,5 @@
 //! Implement pull-based [`Read`] trait for both compressing and decompressing.
-use std::io::{self, BufRead, BufReader, Read};
+use bare_io::{self as io, BufRead, BufReader, Read};
 
 #[cfg(feature = "tokio")]
 use tokio_io::AsyncRead;
@@ -28,12 +28,10 @@ pub struct Encoder<R: BufRead> {
     reader: zio::Reader<R, raw::Encoder>,
 }
 
-impl<R: Read> Decoder<BufReader<R>> {
+impl<R: Read> Decoder<BufReader<R, STREAM_IN_SIZE>> {
     /// Creates a new decoder.
     pub fn new(reader: R) -> io::Result<Self> {
-        let buffer_size = zstd_safe::dstream_in_size();
-
-        Self::with_buffer(BufReader::with_capacity(buffer_size, reader))
+        Self::with_buffer(BufReader::new(reader))
     }
 }
 
@@ -114,12 +112,13 @@ impl<R: AsyncRead + BufRead> AsyncRead for Decoder<R> {
     }
 }
 
-impl<R: Read> Encoder<BufReader<R>> {
+// size_t ZSTD_DStreamInSize(void)  { return ZSTD_BLOCKSIZE_MAX + ZSTD_blockHeaderSize; }
+const STREAM_IN_SIZE: usize = (1 << 17) + 3;
+
+impl<R: Read> Encoder<BufReader<R, STREAM_IN_SIZE>> {
     /// Creates a new encoder.
     pub fn new(reader: R, level: i32) -> io::Result<Self> {
-        let buffer_size = zstd_safe::dstream_in_size();
-
-        Self::with_buffer(BufReader::with_capacity(buffer_size, reader), level)
+        Self::with_buffer(BufReader::new(reader), level)
     }
 }
 
@@ -218,7 +217,7 @@ impl<R: AsyncRead + BufRead> AsyncRead for Encoder<R> {
 }
 
 fn _assert_traits() {
-    use std::io::Cursor;
+    use bare_io::Cursor;
 
     fn _assert_send<T: Send>(_: T) {}
 

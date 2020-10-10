@@ -1,6 +1,6 @@
 use clap::{App, Arg};
 use std::fs;
-use std::io;
+use bare_io as io;
 
 fn main() {
     // This will be a simple application:
@@ -30,14 +30,14 @@ fn main() {
 // Dispatch the source reader depending on the filename
 fn decompress_file(file: &str) -> io::Result<()> {
     match file {
-        "-" => decompress_from(io::stdin()),
-        other => decompress_from(io::BufReader::new(fs::File::open(other)?)),
+        "-" => decompress_from(std::io::stdin()),
+        other => decompress_from(io::BufReader::<_, 4096>::new(fs::File::open(other)?)),
     }
 }
 
 // Decompress from a `Reader` into stdout
 fn decompress_from<R: io::Read>(r: R) -> io::Result<()> {
     let mut decoder = zstd::Decoder::new(r)?;
-    io::copy(&mut decoder, &mut io::stdout())?;
+    bare_io::copy::<_, _, 4096>(&mut decoder, &mut std::io::stdout())?;
     Ok(())
 }

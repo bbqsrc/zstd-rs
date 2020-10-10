@@ -4,7 +4,7 @@
 //! of data using buffers.
 //!
 //! They are mostly thin wrappers around `zstd_safe::{DCtx, CCtx}`.
-use std::io;
+use bare_io as io;
 
 pub use zstd_safe::{CParameter, DParameter, InBuffer, OutBuffer};
 

@@ -1,5 +1,5 @@
 //! Implement push-based [`Write`] trait for both compressing and decompressing.
-use std::io::{self, Write};
+use bare_io::{self as io, Write};
 
 #[cfg(feature = "tokio")]
 use futures::Poll;
@@ -327,6 +327,8 @@ impl<W: AsyncWrite> AsyncWrite for Decoder<W> {
 fn _assert_traits() {
     fn _assert_send<T: Send>(_: T) {}
 
+    #[cfg(feature = "std")]
     _assert_send(Decoder::new(Vec::new()));
+    #[cfg(feature = "std")]
     _assert_send(Encoder::new(Vec::new(), 1));
 }

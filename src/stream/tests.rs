@@ -1,14 +1,16 @@
+#![cfg(feature = "std")]
+
 use super::{copy_encode, decode_all, encode_all};
 use super::{Decoder, Encoder};
 
 use partial_io::{PartialOp, PartialWrite};
 
-use std::io;
+use bare_io as io;
 use std::iter;
 
 #[test]
 fn test_end_of_frame() {
-    use std::io::{Read, Write};
+    use bare_io::{Read, Write};
 
     let mut enc = Encoder::new(Vec::new(), 1).unwrap();
     enc.write_all(b"foo").unwrap();
@@ -40,7 +42,7 @@ fn test_concatenated_frames() {
 
 #[test]
 fn test_flush() {
-    use std::io::Write;
+    use bare_io::Write;
 
     let buf = Vec::new();
     let mut z = Encoder::new(buf, 19).unwrap();
@@ -56,7 +58,7 @@ fn test_flush() {
 
 #[test]
 fn test_try_finish() {
-    use std::io::Write;
+    use bare_io::Write;
     let mut z = setup_try_finish();
 
     z.get_mut().set_ops(iter::repeat(PartialOp::Unlimited));
@@ -77,13 +79,14 @@ fn test_try_finish() {
 #[test]
 #[should_panic]
 fn test_write_after_try_finish() {
-    use std::io::Write;
+    use bare_io::Write;
     let mut z = setup_try_finish();
     z.write_all(b"hello world").unwrap();
 }
 
+#[cfg(feature = "std")]
 fn setup_try_finish() -> Encoder<PartialWrite<Vec<u8>>> {
-    use std::io::Write;
+    use bare_io::Write;
 
     let buf =
         PartialWrite::new(Vec::new(), iter::repeat(PartialOp::Unlimited));
@@ -106,7 +109,7 @@ fn setup_try_finish() -> Encoder<PartialWrite<Vec<u8>>> {
 
 #[test]
 fn test_failing_write() {
-    use std::io::Write;
+    use bare_io::Write;
 
     let buf = PartialWrite::new(
         Vec::new(),
@@ -143,7 +146,7 @@ fn test_failing_write() {
 
 #[test]
 fn test_invalid_frame() {
-    use std::io::Read;
+    use bare_io::Read;
 
     // I really hope this data is invalid...
     let data = &[1u8, 2u8, 3u8, 4u8, 5u8];
@@ -157,7 +160,7 @@ fn test_invalid_frame() {
 
 #[test]
 fn test_incomplete_frame() {
-    use std::io::{Read, Write};
+    use bare_io::{Read, Write};
 
     let mut enc = Encoder::new(Vec::new(), 1).unwrap();
     enc.write_all(b"This is a regular string").unwrap();
@@ -193,7 +196,7 @@ fn test_cli_compatibility() {
 #[test]
 fn test_legacy() {
     use std::fs;
-    use std::io::Read;
+    use bare_io::Read;
 
     // Read the content from that file
     let expected = include_bytes!("../../assets/example.txt");

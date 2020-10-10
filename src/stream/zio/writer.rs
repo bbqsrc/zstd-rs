@@ -1,4 +1,4 @@
-use std::io::{self, Write};
+use bare_io::{self as io, Write};
 
 use crate::stream::raw::{InBuffer, Operation, OutBuffer};
 
@@ -238,10 +238,10 @@ where
     }
 }
 
-#[cfg(test)]
+#[cfg(all(feature = "std", test))]
 mod tests {
     use super::Writer;
-    use std::io::Write;
+    use bare_io::Write;
 
     #[test]
     fn test_noop() {

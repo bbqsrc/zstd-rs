@@ -1,6 +1,6 @@
 use crate::map_error_code;
 
-use std::io;
+use bare_io as io;
 use zstd_safe;
 
 /// Allows to compress independently multiple blocks of data.

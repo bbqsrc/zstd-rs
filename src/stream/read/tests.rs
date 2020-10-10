@@ -1,5 +1,5 @@
 use crate::stream::read::{Decoder, Encoder};
-use std::io::Read;
+use bare_io::Read;
 
 #[test]
 fn test_error_handling() {

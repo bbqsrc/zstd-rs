@@ -1,4 +1,4 @@
-use std::io::{self, BufRead, Read};
+use bare_io::{self as io, BufRead, Read};
 
 use crate::stream::raw::{InBuffer, Operation, OutBuffer};
 
@@ -160,7 +160,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::Reader;
-    use std::io::{Cursor, Read};
+    use bare_io::{Cursor, Read};
 
     #[test]
     fn test_noop() {

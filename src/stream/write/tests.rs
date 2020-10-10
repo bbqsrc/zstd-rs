@@ -1,4 +1,4 @@
-use std::io::{Cursor, Write};
+use bare_io::{Cursor, Write};
 use std::iter;
 
 use partial_io::{PartialOp, PartialWrite};
@@ -54,6 +54,7 @@ fn test_partial_write_finish() {
     assert_eq!(&decode_all(&buf[..]).unwrap(), &input);
 }
 
+#[cfg(feature = "std")]
 fn setup_partial_write(input_data: &[u8]) -> Encoder<PartialWrite<Vec<u8>>> {
     let buf =
         PartialWrite::new(Vec::new(), iter::repeat(PartialOp::Limited(1)));
