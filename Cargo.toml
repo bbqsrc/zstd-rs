@@ -29,7 +29,7 @@ humansize = "1.0"
 walkdir = "2.2"
 
 [features]
-default = ["std", "nightly", "legacy"]
+default = ["std", "legacy"]
 tokio = ["tokio-io", "futures"]
 
 bindgen = ["zstd-safe/bindgen"]
