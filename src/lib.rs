@@ -21,7 +21,7 @@
 //!
 //! [zstd]: https://github.com/facebook/zstd
 #![deny(missing_docs)]
-#![feature(min_const_generics)]
+#![cfg_attr(feature = "nightly", feature(min_const_generics))]
 
 pub mod block;
 pub mod dict;
